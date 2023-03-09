@@ -82,7 +82,7 @@ public class TodoController {
             if (todo.getDescription().length() == 0) {
                 return ResponseEntity.badRequest().body("Description can not be blank");
             }
-            
+            todo.setId(id);
             todoService.update(todo);
             return ResponseEntity.ok("id: " + id + ", Todo updated");
         }
