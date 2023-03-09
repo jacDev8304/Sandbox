@@ -43,12 +43,11 @@ public class TodoController {
         if (todoService.getExistsById(id)) {
             return todoService.getTodoById(id);
         }
-        throw new TodoNotFoundException();
-        
+        throw new TodoNotFoundException();   
     }
 
     @DeleteMapping("/todo/{id}")
-    private ResponseEntity<String> deleteTodo(@PathVariable("id") @NotBlank int id) {
+    private ResponseEntity<String> deleteTodo(@Valid @PathVariable("id") @NotBlank int id) {
         if (todoService.getExistsById(id)) {
             todoService.delete(id);
             return ResponseEntity.ok(id + " Deleted!");
@@ -61,6 +60,14 @@ public class TodoController {
         if (todoService.getExistsById(todo.getId())) {
             return ResponseEntity.badRequest().body("id already exists!");
         }
+        // TODO: refactor duplicate checks
+        if (todo.getTitle().length() == 0) {
+            return ResponseEntity.badRequest().body("Title can not be blank");
+        }
+        if (todo.getDescription().length() == 0) {
+            return ResponseEntity.badRequest().body("Description can not be blank");
+        }
+
         todoService.save(todo);
         return ResponseEntity.ok("Todo added " + todo.getId());
     }
@@ -68,6 +75,14 @@ public class TodoController {
     @PutMapping("/todo/{id}")
     private ResponseEntity<String> updateTodo(@Valid @PathVariable("id") @NotBlank int id, @RequestBody Todo todo) {
         if (todoService.getExistsById(id)) {
+            // TODO: refactor duplicate checks
+            if (todo.getTitle().length() == 0) {
+                return ResponseEntity.badRequest().body("Title can not be blank");
+            }
+            if (todo.getDescription().length() == 0) {
+                return ResponseEntity.badRequest().body("Description can not be blank");
+            }
+            
             todoService.update(todo);
             return ResponseEntity.ok("id: " + id + ", Todo updated");
         }
