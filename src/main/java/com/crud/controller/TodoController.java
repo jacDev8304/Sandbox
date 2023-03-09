@@ -2,6 +2,7 @@ package com.crud.controller;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.crud.model.Todo;
 import com.crud.service.TodoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 public class TodoController {
@@ -41,8 +44,8 @@ public class TodoController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/todo")
-    private int saveTodo(@RequestBody Todo todo) {
+    private ResponseEntity<String> saveTodo(@Valid @RequestBody Todo todo) {
         todoService.saveOrUpdate(todo);
-        return todo.getId();
+        return ResponseEntity.ok("Todo added");
     }
 }
