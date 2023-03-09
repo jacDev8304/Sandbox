@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 public class Todo {
     @Id
     @Column
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column
