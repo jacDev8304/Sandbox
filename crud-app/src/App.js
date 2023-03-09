@@ -3,20 +3,25 @@ import './Components/InputField';
 // import TodoForm from './Components/TodoForm/TodoForm';
 
 function App() {
+  let todos;
 
   async function getTodos() {
     try {
+
       const response = await fetch("http://localhost:8080/todo", {
         method: "GET",
         headers: {
           "accept": "application/json",
         },
       })
-      .then((response) => response.json());
+      .then((response) => response.json())
+      .then((todo) => {
+        todos = todo;
+      });
   
-      if (!response.ok) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`Error! status: ${response.status}`);
+      // }
   
       const result = await response.json();
       return result.json();
@@ -25,13 +30,13 @@ function App() {
     }
   }
   
-  const todos = getTodos();
+  const test = getTodos();
 
-  console.log(todos);
+  console.log('test',test);
   return (
     <div className="App">
      <p>
-      {todos[0]}
+      {todos}
       </p> 
     </div>
   );
