@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,43 +31,51 @@ public class TodoController {
     @Autowired
     TodoService todoService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/todo")
     private List<Todo> getAllTodo()
     {
         return todoService.getAllTodo();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/todo/{id}")
-    private Todo getTodo(@PathVariable("id") @NotBlank int id)
+    private Todo getTodo(@Valid @PathVariable("id") @NotBlank int id)
     {
-        return todoService.getTodoById(id);
+        if (todoService.getExistsById(id)) {
+            return todoService.getTodoById(id);
+        }
+        throw new TodoNotFoundException();
+        
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/todo/{id}")
-    private void deleteTodo(@PathVariable("id") @NotBlank int id) {
-        todoService.delete(id);
+    private ResponseEntity<String> deleteTodo(@PathVariable("id") @NotBlank int id) {
+        if (todoService.getExistsById(id)) {
+            todoService.delete(id);
+            return ResponseEntity.ok(id + " Deleted!");
+        }
+        return ResponseEntity.badRequest().body("Todo does not exist!");
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/todo")
     private ResponseEntity<String> saveTodo(@Valid @RequestBody Todo todo) {
-        System.out.println(todo);
+        if (todoService.getExistsById(todo.getId())) {
+            return ResponseEntity.badRequest().body("id already exists!");
+        }
         todoService.save(todo);
-        return ResponseEntity.ok("Todo added");
+        return ResponseEntity.ok("Todo added " + todo.getId());
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/todo/{id}")
-    private ResponseEntity<String> updateTodo(@Valid @RequestBody Todo todo) {
-        todoService.update(todo);
-        return ResponseEntity.ok("Todo added");
+    private ResponseEntity<String> updateTodo(@Valid @PathVariable("id") @NotBlank int id, @RequestBody Todo todo) {
+        if (todoService.getExistsById(id)) {
+            todoService.update(todo);
+            return ResponseEntity.ok("id: " + id + ", Todo updated");
+        }
+        return ResponseEntity.badRequest().body("Todo does not exist, cannot be updated");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({MethodArgumentNotValidException.class, IllegalArgumentException.class})
     public Map<String, String> handleValidationExceptions(
     MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -79,4 +86,7 @@ public class TodoController {
         });
         return errors;
     }
+
+    @ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such Todo")  // 404
+    public class TodoNotFoundException extends RuntimeException {}
 }

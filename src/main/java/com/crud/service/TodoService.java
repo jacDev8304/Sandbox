@@ -25,6 +25,10 @@ public class TodoService {
         return todoRepository.findById(id).get();
     }
 
+    public Boolean getExistsById(int id) {
+        return todoRepository.existsById(id);
+    }
+
     public void save(Todo todo) {
         todoRepository.save(todo);
     }
