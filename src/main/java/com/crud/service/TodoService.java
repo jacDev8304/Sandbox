@@ -25,7 +25,11 @@ public class TodoService {
         return todoRepository.findById(id).get();
     }
 
-    public void saveOrUpdate(Todo todo) {
+    public void save(Todo todo) {
+        todoRepository.save(todo);
+    }
+    
+    public void update(Todo todo) {
         todoRepository.save(todo);
     }
 
