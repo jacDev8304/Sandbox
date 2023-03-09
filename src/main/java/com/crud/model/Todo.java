@@ -14,7 +14,7 @@ public class Todo {
     @Id
     @Column
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private int id;
 
     @Column
     @NotBlank(message = "Title is mandatory")
@@ -24,7 +24,7 @@ public class Todo {
     @NotBlank(message = "Description is manadtory")
     private String description;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 

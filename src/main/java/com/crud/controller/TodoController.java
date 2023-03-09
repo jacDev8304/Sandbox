@@ -23,6 +23,7 @@ import com.crud.model.Todo;
 import com.crud.service.TodoService;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 public class TodoController {
@@ -39,14 +40,14 @@ public class TodoController {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/todo/{id}")
-    private Todo getTodo(@PathVariable("id") int id)
+    private Todo getTodo(@PathVariable("id") @NotBlank int id)
     {
         return todoService.getTodoById(id);
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @DeleteMapping("/todo/{id}")
-    private void deleteTodo(@PathVariable("id") int id) {
+    private void deleteTodo(@PathVariable("id") @NotBlank int id) {
         todoService.delete(id);
     }
 
